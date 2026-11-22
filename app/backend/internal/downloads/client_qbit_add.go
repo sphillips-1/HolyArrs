@@ -30,6 +30,7 @@ type AddBatch struct {
 	Links      []string
 	Files      []TorrentUpload
 	Category   string
+	Tags       string
 	SavePath   string
 	Paused     bool
 	AllowLocal bool
@@ -140,6 +141,9 @@ func (q *Qbittorrent) AddTorrents(ctx context.Context, b AddBatch) (AddOutcome, 
 	}
 	if b.Category != "" {
 		field("category", b.Category)
+	}
+	if b.Tags != "" {
+		field("tags", b.Tags)
 	}
 	if b.SavePath != "" {
 		field("savepath", b.SavePath)

@@ -70,7 +70,7 @@
 <section aria-labelledby="audiobooks-heading">
 	<h1 id="audiobooks-heading">Audiobooks</h1>
 	{#if session.s.role === 'owner'}
-		<p>Find public-domain LibriVox recordings. Finished downloads go through your existing audiobook import review.</p>
+		<p>Find public-domain LibriVox recordings. A complete recording can import automatically. Files that need a decision appear in <a href="https://torrents.shelfgoblin.dev/imports/reviews/">Review</a>.</p>
 		<form onsubmit={search}>
 			<label for="audiobook-title">Book title</label>
 			<div class="search-fields">

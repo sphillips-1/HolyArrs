@@ -102,7 +102,9 @@ func audiobookRoutes(m *http.ServeMux) {
 		}
 		// Archive torrents can contain multiple copies of each chapter in
 		// different formats. Let the owner select one set before starting.
-		result, err := qbit.AddTorrents(r.Context(), downloads.AddBatch{Files: []downloads.TorrentUpload{file}, Paused: true})
+		result, err := qbit.AddTorrents(r.Context(), downloads.AddBatch{
+			Files: []downloads.TorrentUpload{file}, Tags: "holyarrs-librivox-" + input.ID, Paused: true,
+		})
 		if err != nil || result.Failed > 0 || result.Added+result.Pending+result.Duplicates == 0 {
 			webserver.Fail(w, http.StatusBadGateway, "The torrent could not be added to the audiobook downloader.")
 			return

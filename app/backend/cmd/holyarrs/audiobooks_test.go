@@ -82,7 +82,7 @@ func TestAudiobookPublicDomainSmoke(t *testing.T) {
 				return
 			}
 			defer torrent.Close()
-			uploaded <- r.FormValue("stopped") == "true"
+			uploaded <- r.FormValue("stopped") == "true" && r.FormValue("tags") == "holyarrs-librivox-253"
 			_, _ = io.WriteString(w, "Ok.")
 		default:
 			http.NotFound(w, r)
@@ -112,7 +112,7 @@ func TestAudiobookPublicDomainSmoke(t *testing.T) {
 	select {
 	case paused := <-uploaded:
 		if !paused {
-			t.Fatal("the archive torrent was not queued paused")
+			t.Fatal("the archive torrent was not queued paused with its LibriVox edition tag")
 		}
 	default:
 		t.Fatal("the downloader did not receive the archive torrent")
