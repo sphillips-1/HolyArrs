@@ -69,6 +69,7 @@ GET /api/v1/asks auth=signed_in scope=read assurance=false part=wishlist
 GET /api/v1/asks/limit auth=ask scope=read assurance=false part=wishlist
 GET /api/v1/asks/{id} auth=signed_in scope=read assurance=false part=wishlist
 GET /api/v1/asks/{id}/parts auth=signed_in scope=read assurance=false part=wishlist
+GET /api/v1/audiobooks/search auth=owner scope=admin assurance=false part=-
 GET /api/v1/auth/ai-connect auth=signed_in scope=read assurance=false part=core
 GET /api/v1/auth/invites/{token} auth=unlisted scope=admin assurance=false part=core
 GET /api/v1/auth/keys auth=settings scope=admin assurance=false part=core
@@ -329,6 +330,7 @@ POST /api/v1/asks auth=ask scope=write assurance=false part=wishlist
 POST /api/v1/asks/remove auth=approve scope=write assurance=false part=wishlist
 POST /api/v1/asks/{id}/approve auth=approve scope=write assurance=false part=wishlist
 POST /api/v1/asks/{id}/turn-down auth=approve scope=write assurance=false part=wishlist
+POST /api/v1/audiobooks/grab auth=owner scope=admin assurance=false part=-
 POST /api/v1/auth/ai-connect auth=settings scope=admin assurance=true part=core
 POST /api/v1/auth/forward/link auth=self scope=admin assurance=true part=core
 POST /api/v1/auth/forward/login auth=public scope=admin assurance=false part=core

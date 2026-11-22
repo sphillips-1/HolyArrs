@@ -311,8 +311,10 @@
 	});
 	const unseenAlerts = $derived(toasts.unseen() + openFixes);
 	const hasFailAlert = $derived(openFixes > 0 || toasts.past.some((p) => p.fresh && p.tone === 'fail'));
+	const forkSource = 'https://github.com/sphillips-1/HolyArrs/tree/codex/audiobooks';
 	const accountItems = $derived<MenuItem[]>([
 		{ label: t('frame.layout.account'), icon: 'user', href: to('/account') },
+		{ label: 'Source code for this build', icon: 'arrowUpRight', href: forkSource },
 		// Support sits on the Status page, so only accounts that can open Status see it.
 		...(pageAllowed('/health') ? [{ label: t('frame.layout.support'), icon: 'heart' as const, href: to('/health?tab=support') }] : []),
 		{ kind: 'separator' },
@@ -565,6 +567,7 @@
 			</div>
 			<div class="more-sec">
 				<h3>{t('frame.layout.you')}</h3>
+				<ul><li><SidebarItem href={forkSource} label="Source code for this build" icon="arrowUpRight" current={false} /></li></ul>
 				<ul><li><SidebarItem href={to('/account')} label={t('frame.layout.accountName', { name: session.s.name })} icon="user" current={path === '/account'} onclick={() => (moreOpen = false)} /></li>{#if pageAllowed('/health')}<li><SidebarItem href={to('/health?tab=support')} label={t('frame.layout.support')} icon="heart" current={false} onclick={() => (moreOpen = false)} /></li>{/if}</ul>
 				<div class="more-theme"><SegmentedControl label={t('frame.layout.appearance')} options={themeOptions} bind:value={themeChoice} onchange={(v) => setTheme(v)} /></div>
 				<Button icon="user" full onclick={() => { moreOpen = false; void switchAccount(); }}>{t('frame.layout.switch')}</Button>
