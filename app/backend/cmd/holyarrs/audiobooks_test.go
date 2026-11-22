@@ -51,7 +51,7 @@ func TestAudiobookRoutes(t *testing.T) {
 				t.Setenv("HOLYARRS_AUDIOBOOK_QBIT_KEY", "test")
 			}
 			m := http.NewServeMux()
-			audiobookRoutes(m)
+			audiobookRoutes(m, nil)
 			r := httptest.NewRequest(tc.method, "/api/v1/audiobooks"+tc.path, strings.NewReader(tc.body))
 			w := httptest.NewRecorder()
 			m.ServeHTTP(w, r.WithContext(webserver.ContextWith(r.Context(), tc.caller)))
@@ -92,7 +92,7 @@ func TestAudiobookPublicDomainSmoke(t *testing.T) {
 	t.Setenv("HOLYARRS_AUDIOBOOK_QBIT_URL", qbit.URL)
 	t.Setenv("HOLYARRS_AUDIOBOOK_QBIT_KEY", "test")
 	m := http.NewServeMux()
-	audiobookRoutes(m)
+	audiobookRoutes(m, nil)
 	owner := webserver.Caller{Role: webserver.RoleOwner, Via: "session"}
 	run := func(method, path, body string) *httptest.ResponseRecorder {
 		r := httptest.NewRequest(method, "/api/v1/audiobooks"+path, strings.NewReader(body))

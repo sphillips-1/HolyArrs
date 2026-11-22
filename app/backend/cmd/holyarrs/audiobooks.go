@@ -9,12 +9,14 @@ import (
 	"os"
 	"path"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/HolyArrs/holyarrs/app/backend/internal/core/outbound"
 	"github.com/HolyArrs/holyarrs/app/backend/internal/core/webserver"
 	"github.com/HolyArrs/holyarrs/app/backend/internal/downloads"
+	"github.com/HolyArrs/holyarrs/app/backend/internal/sources"
 )
 
 var audiobookHTTP = &http.Client{Timeout: 12 * time.Second}
@@ -47,7 +49,7 @@ type audiobookEdition struct {
 	Zip      string `json:"url_zip_file"`
 }
 
-func audiobookRoutes(m *http.ServeMux) {
+func audiobookRoutes(m *http.ServeMux, searcher *sources.Searcher) {
 	base := os.Getenv("HOLYARRS_AUDIOBOOK_QBIT_URL")
 	key := os.Getenv("HOLYARRS_AUDIOBOOK_QBIT_KEY")
 	qbit := downloads.NewQbittorrentKey(base, key, downloads.Client(base, true))
@@ -61,12 +63,18 @@ func audiobookRoutes(m *http.ServeMux) {
 			webserver.Fail(w, http.StatusBadRequest, "Enter a title of up to 200 bytes.")
 			return
 		}
-		books, err := librivoxEditions(r, "", url.Values{"title": {title}, "limit": {"20"}})
-		if err != nil {
-			webserver.Fail(w, http.StatusBadGateway, "The LibriVox catalog is unavailable.")
+		source := r.URL.Query().Get("source")
+		if source == "" || source == "librivox" {
+			books, err := librivoxEditions(r, "", url.Values{"title": {title}, "limit": {"20"}})
+			if err != nil {
+				webserver.Fail(w, http.StatusBadGateway, "The LibriVox catalog is unavailable.")
+				return
+			}
+			webserver.WriteJSON(w, http.StatusOK, books)
 			return
 		}
-		webserver.WriteJSON(w, http.StatusOK, books)
+		id, _ := strconv.ParseInt(source, 10, 64)
+		searchAudiobookSource(w, r, searcher, id, title)
 	}))
 	m.HandleFunc("POST /api/v1/audiobooks/grab", audiobookOwner(func(w http.ResponseWriter, r *http.Request) {
 		if base == "" || key == "" {
@@ -74,10 +82,20 @@ func audiobookRoutes(m *http.ServeMux) {
 			return
 		}
 		var input struct {
-			ID string `json:"id"`
+			ID       string `json:"id"`
+			SourceID int64  `json:"source_id"`
+			Title    string `json:"title"`
 		}
 		body := json.NewDecoder(http.MaxBytesReader(w, r.Body, 1024))
-		if err := body.Decode(&input); err != nil || !audiobookID.MatchString(input.ID) || body.Decode(new(any)) != io.EOF {
+		if err := body.Decode(&input); err != nil || body.Decode(new(any)) != io.EOF {
+			webserver.Fail(w, http.StatusBadRequest, "Choose an audiobook release.")
+			return
+		}
+		if input.SourceID > 0 {
+			grabAudiobookSource(w, r, searcher, qbit, input.SourceID, input.Title, input.ID)
+			return
+		}
+		if !audiobookID.MatchString(input.ID) {
 			webserver.Fail(w, http.StatusBadRequest, "Choose a LibriVox edition.")
 			return
 		}
@@ -102,17 +120,20 @@ func audiobookRoutes(m *http.ServeMux) {
 		}
 		// Archive torrents can contain multiple copies of each chapter in
 		// different formats. Let the owner select one set before starting.
-		result, err := qbit.AddTorrents(r.Context(), downloads.AddBatch{
+		queueAudiobook(w, r, qbit, downloads.AddBatch{
 			Files: []downloads.TorrentUpload{file}, Tags: "holyarrs-librivox-" + input.ID, Paused: true,
 		})
-		if err != nil || result.Failed > 0 || result.Added+result.Pending+result.Duplicates == 0 {
-			webserver.Fail(w, http.StatusBadGateway, "The torrent could not be added to the audiobook downloader.")
-			return
-		}
-		webserver.WriteJSON(w, http.StatusOK, result)
 	}))
 }
 
+func queueAudiobook(w http.ResponseWriter, r *http.Request, qbit downloads.TorrentAdder, batch downloads.AddBatch) {
+	result, err := qbit.AddTorrents(r.Context(), batch)
+	if err != nil || result.Failed > 0 || result.Added+result.Pending+result.Duplicates == 0 {
+		webserver.Fail(w, http.StatusBadGateway, "The torrent could not be added to the audiobook downloader.")
+		return
+	}
+	webserver.WriteJSON(w, http.StatusOK, result)
+}
 func fetchAudiobookTorrent(r *http.Request, link string) (downloads.TorrentUpload, error) {
 	var file downloads.TorrentUpload
 	req, err := http.NewRequestWithContext(r.Context(), http.MethodGet, link, nil)

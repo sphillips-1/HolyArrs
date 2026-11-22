@@ -179,3 +179,19 @@ func prefetchTorrentHeader(ctx context.Context, link string, allowLocal bool, lo
 
 // torrentFetchMax caps a .torrent read for Transmission, Deluge, rTorrent and aria2.
 const torrentFetchMax int64 = 8 << 20
+
+// TorrentBatchFromSource prepares one release without giving qBittorrent a
+// web URL to fetch. It also handles the magnet redirects indexers can return.
+func TorrentBatchFromSource(ctx context.Context, link, sourceURL string, allowLocal bool, transport http.RoundTripper) (AddBatch, error) {
+	if strings.HasPrefix(strings.ToLower(link), "magnet:") {
+		return AddBatch{Links: []string{link}}, nil
+	}
+	file, magnet, err := fetchGrabLink(ctx, link, addFetchMax, transport, sourceLocalHost(sourceURL, allowLocal))
+	if err != nil {
+		return AddBatch{}, err
+	}
+	if magnet != "" {
+		return AddBatch{Links: []string{magnet}}, nil
+	}
+	return AddBatch{Files: []TorrentUpload{{Name: linkName(link), Data: file}}}, nil
+}

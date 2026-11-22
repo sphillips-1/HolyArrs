@@ -427,6 +427,7 @@ func (c *Client) Caps(ctx context.Context) (Caps, error) {
 // Query is one movie search, or a show or album search when TV or Music is set.
 type Query struct {
 	Title      string
+	Audiobook  bool
 	Year       int
 	IMDb       string
 	TMDb       int
@@ -623,6 +624,11 @@ func searchValues(q Query, caps Caps, withIDs bool) (url.Values, bool, error) {
 		}
 	case q.TV:
 		return nil, false, &Error{Kind: KindBroken, Msg: "the Source offers no show search"}
+	case q.Audiobook && caps.Search:
+		v.Set("t", "search")
+		v.Set("q", q.Title)
+	case q.Audiobook:
+		return nil, false, &Error{Kind: KindBroken, Msg: "the Source offers no text search"}
 	case caps.MovieSearch:
 		v.Set("t", "movie")
 		if id := strings.TrimPrefix(strings.ToLower(strings.TrimSpace(q.IMDb)), "tt"); withIDs && id != "" && caps.Supports("movie", "imdbid") {

@@ -235,6 +235,10 @@
 				{#each [['movie', t('settings.sources.movies')], ['tv', t('settings.sources.tvShows')], ['music', t('settings.sources.music')]] as [k, label] (k)}
 					<label class="checkline"><input type="checkbox" checked={form.kinds.includes(k)} onchange={(e) => toggleKind(k, e.currentTarget.checked)} /><span>{label}</span></label>
 				{/each}
+				{#if form.format === 'torznab' && form.protocol === 'torrent'}
+					<label class="checkline"><input type="checkbox" checked={form.kinds.includes('audiobook')} onchange={(e) => toggleKind('audiobook', e.currentTarget.checked)} /><span>Audiobooks</span></label>
+					{#if form.kinds.includes('audiobook') && !form.hand_search}<p class="muted">Enable hand search to use this Source in Audiobooks.</p>{/if}
+				{/if}
 			</fieldset>
 			<div class="two">
 				<Field id="so-prio" label={t('settings.sources.priority')} hint={t('settings.sources.priorityHint')}>

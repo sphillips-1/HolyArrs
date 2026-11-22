@@ -9,6 +9,13 @@ starting the torrent. The homelab importer uses the torrent's LibriVox
 edition tag to import a verified recording automatically. Ambiguous recordings
 and failed imports appear in **Review**, linked from the Audiobooks page.
 
+LibriVox is selected by default. To add another indexer, open **Settings →
+Sources** and create or edit a Torznab torrent Source. Enable **Audiobooks**
+and **Hand search**. Its results appear in the Audiobooks release table and
+go to the dedicated audiobook downloader when grabbed. Torznab searches use
+category 3030 (Audiobook) unless the Source supplies an audiobook category.
+Downloads from these Sources use the homelab’s existing import workflow.
+
 Set these environment variables on the test HolyArrs instance:
 
 - `HOLYARRS_AUDIOBOOK_QBIT_URL` is the audiobook client's internal base URL.

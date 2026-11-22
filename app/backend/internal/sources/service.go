@@ -37,7 +37,7 @@ var (
 	ErrQuery      error = queryErr{}
 	ErrPriority         = errors.New("priority must be 1 to 50 (1 is asked first)")
 	ErrLimits           = errors.New("limits must be 0 or more: searches_per_window up to 10000, window_seconds up to 7 days, gap_ms up to 10 minutes, timeout_ms up to 5 minutes")
-	ErrKinds            = errors.New("kinds may be movie, tv and music")
+	ErrKinds            = errors.New("kinds may be movie, tv, music and audiobook")
 	ErrUse              = errors.New("an rss Source can only be used for the feed; it cannot search")
 	ErrProxy            = errors.New("the proxy must look like http://host:port, https://host:port or socks5://host:port")
 	ErrKeyAgain         = errors.New("the address changed to another host; type the key again so it is never sent to a new host by itself")
@@ -574,7 +574,7 @@ func fill(in Input, src *domain.Source, isNew bool) (key, proxyPass string, err 
 	}
 	if in.Kinds != nil {
 		for _, k := range in.Kinds {
-			if !slices.Contains(AllKinds, k) {
+			if k != "audiobook" && !slices.Contains(AllKinds, k) {
 				return "", "", ErrKinds
 			}
 		}

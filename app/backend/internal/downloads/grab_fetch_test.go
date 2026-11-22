@@ -76,6 +76,10 @@ func TestGrabFetchPublicNameAndMagnetRedirect(t *testing.T) {
 	if b, m, err := fetchGrabLink(context.Background(), "http://public.example/magnet", addFetchMax, nil, ""); err != nil || b != nil || m != magnet {
 		t.Errorf("magnet redirect: %q %q %v", b, m, err)
 	}
+	batch, err := TorrentBatchFromSource(context.Background(), "http://public.example/magnet", "http://public.example", false, nil)
+	if err != nil || len(batch.Links) != 1 || batch.Links[0] != magnet || len(batch.Files) != 0 {
+		t.Fatalf("source torrent batch = %+v, error = %v", batch, err)
+	}
 }
 
 func TestGrabHandsQbittorrentTheFileNotTheAddress(t *testing.T) {
