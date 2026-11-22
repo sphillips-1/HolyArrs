@@ -26,6 +26,36 @@ func TestAudiobookTorrent(t *testing.T) {
 	}
 }
 
+func TestAudiobookLibrary(t *testing.T) {
+	gateway := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/internal/audiobook-library" || r.URL.Query().Get("page") != "2" ||
+			r.Header.Get("Authorization") != "Bearer fixture" {
+			t.Errorf("unexpected catalog gateway request")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		_, _ = io.WriteString(w, `{"items":[{"id":"sample","title":"Example","path":"/private"}],"total":101,"limit":50}`)
+	}))
+	defer gateway.Close()
+	handler := audiobookOwner(audiobookLibrary(gateway.Client(), gateway.URL, "fixture"))
+	for _, tc := range []struct {
+		role, page string
+		status     int
+	}{
+		{webserver.RoleMember, "2", http.StatusForbidden},
+		{webserver.RoleOwner, "-1", http.StatusBadRequest},
+		{webserver.RoleOwner, "2", http.StatusOK},
+	} {
+		r := httptest.NewRequest(http.MethodGet, "/api/v1/audiobooks/library?page="+tc.page, nil)
+		caller := webserver.Caller{Role: tc.role, Via: "session"}
+		w := httptest.NewRecorder()
+		handler.ServeHTTP(w, r.WithContext(webserver.ContextWith(r.Context(), caller)))
+		if w.Code != tc.status || strings.Contains(w.Body.String(), "/private") {
+			t.Fatalf("unexpected catalog response for %s: %d %s", tc.role, w.Code, w.Body)
+		}
+	}
+}
+
 func TestAudiobookRoutes(t *testing.T) {
 	for _, tc := range []struct {
 		name       string

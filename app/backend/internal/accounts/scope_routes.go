@@ -11,6 +11,7 @@ import (
 // RoutePerms give them (see RouteScope).
 var RouteScopes = map[string]string{
 	"GET /api/v1/audiobooks/search":                              webserver.ScopeAdmin,
+	"GET /api/v1/audiobooks/library":                             webserver.ScopeAdmin,
 	"GET /api/v1/trash/profiles":                                 webserver.ScopeAdmin,
 	"GET /api/v1/downloads/{id}/swarm":                           webserver.ScopeAdmin,
 	"GET /api/v1/downloads/{id}/detail":                          webserver.ScopeAdmin,

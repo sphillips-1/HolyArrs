@@ -69,6 +69,7 @@ GET /api/v1/asks auth=signed_in scope=read assurance=false part=wishlist
 GET /api/v1/asks/limit auth=ask scope=read assurance=false part=wishlist
 GET /api/v1/asks/{id} auth=signed_in scope=read assurance=false part=wishlist
 GET /api/v1/asks/{id}/parts auth=signed_in scope=read assurance=false part=wishlist
+GET /api/v1/audiobooks/library auth=owner scope=admin assurance=false part=-
 GET /api/v1/audiobooks/search auth=owner scope=admin assurance=false part=-
 GET /api/v1/auth/ai-connect auth=signed_in scope=read assurance=false part=core
 GET /api/v1/auth/invites/{token} auth=unlisted scope=admin assurance=false part=core

@@ -52,7 +52,9 @@ type audiobookEdition struct {
 func audiobookRoutes(m *http.ServeMux, searcher *sources.Searcher) {
 	base := os.Getenv("HOLYARRS_AUDIOBOOK_QBIT_URL")
 	key := os.Getenv("HOLYARRS_AUDIOBOOK_QBIT_KEY")
-	qbit := downloads.NewQbittorrentKey(base, key, downloads.Client(base, true))
+	client := downloads.Client(base, true)
+	qbit := downloads.NewQbittorrentKey(base, key, client)
+	m.HandleFunc("GET /api/v1/audiobooks/library", audiobookOwner(audiobookLibrary(client, base, key)))
 	m.HandleFunc("GET /api/v1/audiobooks/search", audiobookOwner(func(w http.ResponseWriter, r *http.Request) {
 		if base == "" || key == "" {
 			webserver.Fail(w, http.StatusServiceUnavailable, "The audiobook downloader is not configured.")

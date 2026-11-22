@@ -98,6 +98,7 @@
 		{#if session.s.role === 'owner'}
 			<span class="tp-gap"></span>
 			<div class="tp-cap">
+				<Button href={to('/library/audiobooks')} icon="library">Library</Button>
 				<Button href={to('/settings/sources')} icon="settings">Sources</Button>
 				<Button href="https://torrents.shelfgoblin.dev/imports/reviews/" icon="arrowUpRight">Review</Button>
 			</div>
