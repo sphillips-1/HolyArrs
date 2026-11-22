@@ -19,7 +19,7 @@ describe('buildNav', () => {
 	it('gives owners every section, with Requests last under Your stuff', () => {
 		expect(labels(owner)).toEqual([
 			[null, ['Home', 'Explore', 'New & Popular']],
-			['Library', ['Movies', 'TV shows', 'Music', 'Stats']],
+			['Library', ['Movies', 'TV shows', 'Music', 'Audiobooks', 'Stats']],
 			['Your stuff', ['Calendar', 'Requests']],
 			['Activity', ['Downloads', 'History']],
 			['System', ['Status', 'Plugins', 'Settings']]
@@ -55,7 +55,7 @@ describe('buildNav', () => {
 	});
 	it('drops places whose part is off', () => {
 		const nav = buildNav({ ...owner, kinds: ['show'], off: (h) => h === '/requests' });
-		expect(nav.find((s) => s.id === 'library')?.items.map((i) => i.label)).toEqual(['TV shows', 'Stats']);
+		expect(nav.find((s) => s.id === 'library')?.items.map((i) => i.label)).toEqual(['TV shows', 'Audiobooks', 'Stats']);
 		expect(nav.find((s) => s.id === 'yours')?.items.map((i) => i.label)).not.toContain('Requests');
 	});
 	it('carries the badge counts', () => {
