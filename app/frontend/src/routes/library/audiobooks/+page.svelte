@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import SearchField from '#lib/discover/SearchField.svelte';
 	import LibraryToolPage from '#lib/mediafiles/LibraryToolPage.svelte';
 	import Button from '#lib/ui/Button.svelte';
 	import EmptyState from '#lib/ui/EmptyState.svelte';
@@ -48,6 +49,7 @@
 	{#if session.s.role !== 'owner'}
 		<EmptyState icon="audiobook" title="Sign in as the owner to open Audiobooks" />
 	{:else}
+		<div class="phone-field"><SearchField searchKey="" testid="search-box-phone" id="q-phone" /></div>
 		{#if error}<p role="alert">{error} <Button size="sm" onclick={() => load(page)}>Retry</Button></p>{/if}
 		<div class="tp-sheet catalog" aria-busy={busy}>
 			{#if catalog?.items.length}
@@ -86,6 +88,11 @@
 </LibraryToolPage>
 
 <style>
+	.phone-field { display: none; }
+	@media (max-width: 767px) {
+		.phone-field { display: block; }
+		.phone-field :global(.ui-search) { width: 100%; }
+	}
 	.catalog { overflow-x: auto; }
 	.catalog .book-cover { width: 44px; }
 	@media (max-width: 639px) {

@@ -43,7 +43,7 @@
 	import SegmentedControl from '#lib/ui/SegmentedControl.svelte';
 	import Button from '#lib/ui/Button.svelte';
 	import { trackInputModality } from './(frame)/focus.ts';
-	import { focusField, rememberReturn, searchField } from '#lib/core/search-field.svelte.ts';
+	import { focusField, isAudiobookSearch, rememberReturn, searchField } from '#lib/core/search-field.svelte.ts';
 	import AskHost from './(frame)/AskHost.svelte';
 	import {
 		buildNav,
@@ -236,6 +236,10 @@
 			// Ctrl+K and / focus the one search field (the top bar; on phones the Search page's) and open Search.
 			e.preventDefault();
 			showBar();
+			if (session.s.role === 'owner' && isAudiobookSearch(path)) {
+				focusField(true);
+				return;
+			}
 			if (!path.startsWith('/search')) rememberReturn();
 			const shown = focusField(true);
 			// A key press means a keyboard is there: when no field showed yet (phones), focus the Search page's field once it opens, so typed words are not lost.

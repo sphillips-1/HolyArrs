@@ -6,7 +6,8 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { appPath, to } from '../core/paths.ts';
-	import { dlScope, registerField, rememberReturn, searchField, searchHooks } from '../core/search-field.svelte.ts';
+	import { audiobookSearch, audiobookSearchHooks, dlScope, isAudiobookSearch, registerField, rememberReturn, searchField, searchHooks } from '../core/search-field.svelte.ts';
+	import { session } from '../core/session.svelte.ts';
 	import { api } from '../core/api.ts';
 	import { inSettings, settingsFind } from '../core/settings-find.svelte.ts';
 
@@ -20,6 +21,7 @@
 	const scoped = $derived(dlScope.on && !dlScope.off && appPath(page.url.pathname).startsWith('/downloads'));
 	// In Settings the field searches settings instead, with results on the Settings home.
 	const settings = $derived(inSettings(appPath(page.url.pathname)));
+	const audiobooks = $derived(session.s.role === 'owner' && isAudiobookSearch(appPath(page.url.pathname)));
 	const shown = $derived(settings ? settingsFind.term : scoped ? dlScope.term : searchField.term);
 	function settingsTyped(v: string) {
 		settingsFind.term = v;
@@ -101,6 +103,13 @@
 	}
 	function submitted(e: SubmitEvent) {
 		e.preventDefault();
+		if (audiobooks) {
+			const term = audiobookSearch.term.trim();
+			if (!term || audiobookSearch.busy) return;
+			if (appPath(page.url.pathname) === '/audiobooks') audiobookSearchHooks.submit?.();
+			else void goto(to(`/audiobooks?q=${encodeURIComponent(term)}`));
+			return;
+		}
 		if (scoped) return;
 		close();
 		if (onSearch()) searchHooks.submit?.();
@@ -161,8 +170,15 @@
 <form class="ui-search" role="search" onsubmit={submitted}>
 	<span class="glow" aria-hidden="true"></span>
 	<span class="ic" aria-hidden="true"><Icon name="search" size={18} /></span>
-	<label class="sr-only" for={id}>{settings ? t('discover.searchField.searchSettings') : t('discover.searchField.searchForATitle')}</label>
-	{#if settings}
+	<label class="sr-only" for={id}>{audiobooks ? 'Search audiobooks' : settings ? t('discover.searchField.searchSettings') : t('discover.searchField.searchForATitle')}</label>
+	{#if audiobooks}
+		<input {id} bind:this={el} type="search" bind:value={audiobookSearch.term} maxlength="200" readonly={audiobookSearch.busy} onkeydown={(e) => { if (!audiobookSearch.busy && e.key === 'Escape' && audiobookSearch.term) { e.preventDefault(); audiobookSearch.term = ''; } }} placeholder="Search audiobooks" autocomplete="off" spellcheck="false" enterkeyhint="search" data-testid={testid} />
+		{#if audiobookSearch.term}
+			<button type="button" class="clear" disabled={audiobookSearch.busy} aria-label={t('discover.searchField.clearTheSearch')} onclick={() => { audiobookSearch.term = ''; el?.focus(); }}><Icon name="x" size={14} /></button>
+		{:else if searchKey}
+			<kbd class="hint" aria-hidden="true">{searchKey}</kbd>
+		{/if}
+	{:else if settings}
 	<input {id} bind:this={el} type="search" value={shown} oninput={(e) => settingsTyped(e.currentTarget.value)} onkeydown={settingsKey} placeholder={t('discover.searchField.searchSettings')} autocomplete="off" spellcheck="false" enterkeyhint="search" data-testid={testid} />
 	{#if shown}<button type="button" class="clear" tabindex="-1" aria-label={t('discover.searchField.clearTheSearch')} onclick={() => { settingsFind.term = ''; el?.focus(); }}><Icon name="x" size={14} /></button>{:else}<kbd class="hint" aria-hidden="true">{searchKey}</kbd>{/if}
 	{:else}
@@ -175,7 +191,7 @@
 	{/if}
 	{/if}
 	{#if one && !settings}<button type="button" class="close" aria-label={searchField.term ? t('discover.searchField.clear') : t('discover.searchField.close')} title={searchField.term ? t('discover.searchField.clear') : t('discover.searchField.close')} data-testid="search-close" onclick={clearOrClose}><Icon name="x" size={16} /></button>{/if}
-	{#if answer || waiting}<GlassDropdown {answer} {active} id={listId} onpick={pick} onword={word} />{/if}
+	{#if !audiobooks && (answer || waiting)}<GlassDropdown {answer} {active} id={listId} onpick={pick} onword={word} />{/if}
 </form>
 
 <style>
