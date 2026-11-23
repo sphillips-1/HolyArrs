@@ -6,16 +6,16 @@
 	// Downloads search: filters the list as you type. × and Esc clear the words; Ctrl K and "/" focus it (handled by the page).
 	let {
 		term = $bindable(''),
+		el = $bindable(),
 		shown,
 		total,
 		searchKey = 'Ctrl K',
 		placeholder = undefined,
 		note = '',
 		testid = 'dl-find'
-	}: { term?: string; shown: number; total: number; searchKey?: string; /** The field's words (the Library uses its own). */ placeholder?: string; /** A quiet line at the right, e.g. "36 TV shows". */ note?: string; testid?: string } = $props();
+	}: { term?: string; el?: HTMLInputElement; shown: number; total: number; searchKey?: string; /** The field's words (the Library uses its own). */ placeholder?: string; /** A quiet line at the right, e.g. "36 TV shows". */ note?: string; testid?: string } = $props();
 
 	const ph = $derived(placeholder ?? t('downloads.list.search'));
-	let el = $state<HTMLInputElement>();
 	const has = $derived(!!term.trim());
 
 	function key(e: KeyboardEvent) {

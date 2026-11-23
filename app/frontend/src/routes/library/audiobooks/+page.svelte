@@ -2,6 +2,9 @@
 	import { onMount } from 'svelte';
 	import LibraryToolPage from '#lib/mediafiles/LibraryToolPage.svelte';
 	import Button from '#lib/ui/Button.svelte';
+	import IconButton from '#lib/ui/IconButton.svelte';
+	import DlFind from '#lib/downloads/DlFind.svelte';
+	import { dlTop } from '#lib/downloads/index.ts';
 	import EmptyState from '#lib/ui/EmptyState.svelte';
 	import Poster from '#lib/ui/Poster.svelte';
 	import { api, message } from '#lib/core/api.ts';
@@ -38,6 +41,8 @@
 	const limit = $derived(catalog?.limit ?? 50);
 	const visible = $derived(searching ? matches?.slice(searchPage * limit, (searchPage + 1) * limit) : catalog?.items);
 	const total = $derived(searching ? matches?.length : catalog?.total);
+	const countText = $derived(total === undefined ? '' : searching && catalog
+		? `${total} of ${catalog.total} audiobooks` : `${total} ${total === 1 ? 'audiobook' : 'audiobooks'}`);
 	const currentPage = $derived(searching ? searchPage : page);
 	const pending = $derived(searching ? searchBusy : busy);
 
@@ -97,21 +102,15 @@
 
 <svelte:head><title>Audiobook Library · HolyArrs</title></svelte:head>
 
-<LibraryToolPage title="Audiobooks" count={total === undefined ? '' : searching && catalog ? `${total} of ${catalog.total}` : String(total)}>
+<LibraryToolPage title="Audiobooks" libraryToolbar={session.s.role === 'owner'}>
 	{#snippet bar()}
 		{#if session.s.role === 'owner'}
-			<span class="tp-gap"></span>
-			<label class="sr-only" for="audiobook-library-search">Search audiobook library</label>
-			<input class="input library-search" id="audiobook-library-search" type="search" bind:this={field} value={query}
-				oninput={(event) => updateSearch(event.currentTarget.value)}
-				onkeydown={(event) => {
-					if (event.key === 'Escape' && query) {
-						event.preventDefault();
-						updateSearch('');
-					}
-				}}
-				placeholder="Search audiobook library" autocomplete="off" />
-			<Button href={to('/audiobooks')} variant="primary" icon="search">Find audiobooks</Button>
+			{#if dlTop.collapsed}
+				<span class="tp-cap sidebar-toggle"><IconButton icon="sidebar" label="Show sidebar" onclick={() => dlTop.toggle()} /></span>
+			{/if}
+			<DlFind bind:el={field} bind:term={() => query, updateSearch} shown={total ?? 0} total={catalog?.total ?? 0}
+				searchKey={dlTop.searchKey} placeholder="Search audiobooks" note={countText} testid="audiobook-library-search" />
+			<span class="tp-cap"><IconButton href={to('/audiobooks')} icon="plus" label="Find audiobooks" tipSide="below-end" /></span>
 		{/if}
 	{/snippet}
 	{#if session.s.role !== 'owner'}
@@ -158,7 +157,7 @@
 </LibraryToolPage>
 
 <style>
-	.library-search { width: min(100%, 18rem); }
+	@media (max-width: 767px) { .sidebar-toggle { display: none; } }
 	.catalog { overflow-x: auto; }
 	.catalog .book-cover { width: 44px; }
 	@media (max-width: 639px) {

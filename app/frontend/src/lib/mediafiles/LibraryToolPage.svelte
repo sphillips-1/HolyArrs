@@ -1,12 +1,12 @@
 <!-- Shared page frame for library tool pages: title bar, count and styled slots. -->
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	let { title, count = '', bar, children }: { title: string; count?: string; bar?: Snippet; children: Snippet } = $props();
+	let { title, count = '', bar, children, libraryToolbar = false }: { title: string; count?: string; bar?: Snippet; children: Snippet; libraryToolbar?: boolean } = $props();
 </script>
 
 <div class="tp">
-	<div class="tp-bar" role="toolbar" aria-label={title}>
-		<h1 class="tp-name">{title}{#if count}<span class="tp-count">{count}</span>{/if}</h1>
+	<div class="tp-bar" class:library-toolbar={libraryToolbar} role="toolbar" aria-label={title}>
+		<h1 class={libraryToolbar ? 'sr-only' : 'tp-name'}>{title}{#if count}<span class="tp-count">{count}</span>{/if}</h1>
 		{@render bar?.()}
 	</div>
 	{@render children()}
@@ -21,6 +21,8 @@
 
 
 	.tp-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
+	.library-toolbar { position: sticky; top: 0; z-index: 6; margin: calc(-1 * var(--s-6, 24px)) calc(-1 * var(--gutter, 0px)) 0; padding: 10px var(--gutter, 0px); background: var(--bg); border-bottom: 1px solid transparent; }
+	.library-toolbar :global(.dlfind) { flex-basis: 150px; min-width: 150px; }
 	.tp-name { display: inline-flex; align-items: baseline; gap: 10px; min-width: 0; margin: 0 8px 0 0; font: 700 30px/1.2 var(--font-display, var(--font-ui)); letter-spacing: -0.022em; white-space: nowrap; }
 	.tp-count { color: var(--text-muted); font: 500 14px/1 var(--font-ui); letter-spacing: 0; font-variant-numeric: tabular-nums; }
 	.tp :global(.tp-gap) { flex: 1 1 auto; }
@@ -76,6 +78,9 @@
 	.tp :global(.tp-foot) { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
 
 	@media (max-width: 639px) {
+		.library-toolbar { position: static; margin: 0; padding: 8px 0; }
+		.library-toolbar :global(.tp-cap) { flex: none; }
+		.library-toolbar :global(.dlfind .kb) { display: none; }
 		.tp-name { flex: 1 1 100%; font-size: 20px; }
 		.tp :global(.tp-cap) { flex: 1 1 auto; }
 		.tp :global(.tp-gap) { display: none; }
