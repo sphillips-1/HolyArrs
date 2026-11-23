@@ -4,11 +4,60 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 
 	"github.com/HolyArrs/holyarrs/app/backend/internal/core/webserver"
 )
+
+var audiobookItemID = regexp.MustCompile(`^[A-Za-z0-9-]{1,80}$`)
+
+func audiobookCover(client *http.Client, base, key string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+		if !audiobookItemID.MatchString(id) {
+			http.NotFound(w, r)
+			return
+		}
+		if base == "" || key == "" {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
+		target := strings.TrimRight(base, "/") + "/internal/audiobook-cover?id=" + id
+		req, err := http.NewRequestWithContext(r.Context(), http.MethodGet, target, nil)
+		if err != nil {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
+		req.Header.Set("Authorization", "Bearer "+key)
+		resp, err := client.Do(req)
+		if err != nil {
+			w.WriteHeader(http.StatusBadGateway)
+			return
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode == http.StatusNotFound {
+			http.NotFound(w, r)
+			return
+		}
+		kind := resp.Header.Get("Content-Type")
+		if resp.StatusCode != http.StatusOK || (kind != "image/jpeg" && kind != "image/png" && kind != "image/webp") {
+			w.WriteHeader(http.StatusBadGateway)
+			return
+		}
+		const maxCover = 512 << 10
+		cover, err := io.ReadAll(io.LimitReader(resp.Body, maxCover+1))
+		if err != nil || len(cover) == 0 || len(cover) > maxCover {
+			w.WriteHeader(http.StatusBadGateway)
+			return
+		}
+		w.Header().Set("Content-Type", kind)
+		webserver.CacheHeaders(w, "private, max-age=300", false)
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		_, _ = w.Write(cover)
+	}
+}
 
 type audiobookLibraryPage struct {
 	Items []struct {

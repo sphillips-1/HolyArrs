@@ -55,6 +55,7 @@ func audiobookRoutes(m *http.ServeMux, searcher *sources.Searcher) {
 	client := downloads.Client(base, true)
 	qbit := downloads.NewQbittorrentKey(base, key, client)
 	m.HandleFunc("GET /api/v1/audiobooks/library", audiobookOwner(audiobookLibrary(client, base, key)))
+	m.HandleFunc("GET /api/v1/audiobooks/cover/{id}", audiobookOwner(audiobookCover(client, base, key)))
 	m.HandleFunc("GET /api/v1/audiobooks/search", audiobookOwner(func(w http.ResponseWriter, r *http.Request) {
 		if base == "" || key == "" {
 			webserver.Fail(w, http.StatusServiceUnavailable, "The audiobook downloader is not configured.")

@@ -56,6 +56,41 @@ func TestAudiobookLibrary(t *testing.T) {
 	}
 }
 
+func TestAudiobookCover(t *testing.T) {
+	gateway := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/internal/audiobook-cover" || r.URL.Query().Get("id") != "book-1" ||
+			r.Header.Get("Authorization") != "Bearer fixture" {
+			t.Error("unexpected cover gateway request")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		w.Header().Set("Content-Type", "image/jpeg")
+		_, _ = io.WriteString(w, "cover fixture")
+	}))
+	defer gateway.Close()
+	m := http.NewServeMux()
+	m.HandleFunc("GET /api/v1/audiobooks/cover/{id}", audiobookOwner(audiobookCover(gateway.Client(), gateway.URL, "fixture")))
+	for _, tc := range []struct {
+		role, via, id string
+		status        int
+	}{
+		{webserver.RoleMember, "session", "book-1", http.StatusForbidden},
+		{webserver.RoleOwner, "api_key", "book-1", http.StatusForbidden},
+		{webserver.RoleOwner, "session", "book%2F1", http.StatusNotFound},
+		{webserver.RoleOwner, "session", "book-1", http.StatusOK},
+	} {
+		r := httptest.NewRequest(http.MethodGet, "/api/v1/audiobooks/cover/"+tc.id, nil)
+		w := httptest.NewRecorder()
+		m.ServeHTTP(w, r.WithContext(webserver.ContextWith(r.Context(), webserver.Caller{Role: tc.role, Via: tc.via})))
+		if w.Code != tc.status {
+			t.Fatalf("got HTTP %d, want %d", w.Code, tc.status)
+		}
+		if tc.status == http.StatusOK && (w.Header().Get("Content-Type") != "image/jpeg" || w.Body.String() != "cover fixture") {
+			t.Fatal("unexpected cover response")
+		}
+	}
+}
+
 func TestAudiobookRoutes(t *testing.T) {
 	for _, tc := range []struct {
 		name       string

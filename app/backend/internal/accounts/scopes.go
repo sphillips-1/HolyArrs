@@ -13,6 +13,7 @@ import (
 // owner only, so a new route is closed until someone decides who may use it.
 var RoutePerms = map[string]webserver.Perm{
 	"GET /api/v1/audiobooks/search":                     webserver.NeedOwner,
+	"GET /api/v1/audiobooks/cover/{id}":                  webserver.NeedOwner,
 	"GET /api/v1/audiobooks/library":                    webserver.NeedOwner,
 	"POST /api/v1/audiobooks/grab":                       webserver.NeedOwner,
 	"GET /api/v1/plugins":                               webserver.NeedOwner,
