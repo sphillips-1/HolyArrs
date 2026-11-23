@@ -3,6 +3,7 @@
 	import LibraryToolPage from '#lib/mediafiles/LibraryToolPage.svelte';
 	import Button from '#lib/ui/Button.svelte';
 	import EmptyState from '#lib/ui/EmptyState.svelte';
+	import Icon from '#lib/ui/Icon.svelte';
 	import { api, message } from '#lib/core/api.ts';
 	import { to } from '#lib/core/paths.ts';
 	import { session } from '#lib/core/session.svelte.ts';
@@ -55,7 +56,12 @@
 					<tbody>
 						{#each catalog.items as book (book.id)}
 							<tr>
-								<td><a href={`https://audiobooks.shelfgoblin.dev/audiobookshelf/item/${encodeURIComponent(book.id)}`}>{book.title}</a></td>
+								<td>
+									<a class="tp-who" href={`https://audiobooks.shelfgoblin.dev/audiobookshelf/item/${encodeURIComponent(book.id)}`}>
+										<span class="tp-art book-icon"><Icon name="audiobook" size={18} /></span>
+										<span class="tp-tx">{book.title}</span>
+									</a>
+								</td>
 								<td>{book.author || '—'}</td><td>{book.narrator || '—'}</td>
 							</tr>
 						{/each}
@@ -79,5 +85,10 @@
 
 <style>
 	.catalog { overflow-x: auto; }
+	.book-icon { display: grid; place-items: center; aspect-ratio: 1; color: var(--text-muted); background: var(--surface-2); }
+	@media (max-width: 639px) {
+		.catalog .tp-who { gap: 8px; }
+		.catalog .book-icon { width: 28px; }
+	}
 	nav { display: flex; gap: 12px; align-items: center; justify-content: end; }
 </style>
