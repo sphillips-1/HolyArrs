@@ -280,7 +280,7 @@
 			...shelfEntries({ on: (part) => partsNow.answer?.parts.find((p) => p.part === part)?.on !== false, kid: !!session.kid, manage: canManage }).map(
 				(e): MenuItem => ({ label: e.key === 'stats' ? tr('frame.nav.stats') : tr(`mediafiles.kinds.${e.key}`), checked: e.key === 'stats' ? false : kind === e.key, onselect: () => void goto(to(e.href)) })
 			),
-			...(session.s.role === 'owner' ? [{ label: 'Audiobooks', onselect: () => void goto(to('/library/audiobooks')) }] : [])
+			...(session.s.role === 'owner' ? [{ label: 'Audiobooks', icon: 'audiobook' as const, onselect: () => void goto(to('/library/audiobooks')) }] : [])
 		]
 	);
 	let findOpen = $state(false);

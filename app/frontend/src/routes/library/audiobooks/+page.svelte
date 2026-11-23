@@ -45,7 +45,7 @@
 		{/if}
 	{/snippet}
 	{#if session.s.role !== 'owner'}
-		<EmptyState icon="library" title="Sign in as the owner to open Audiobooks" />
+		<EmptyState icon="audiobook" title="Sign in as the owner to open Audiobooks" />
 	{:else}
 		{#if error}<p role="alert">{error} <Button size="sm" onclick={() => load(page)}>Retry</Button></p>{/if}
 		<div class="tp-sheet catalog" aria-busy={busy}>
@@ -62,9 +62,9 @@
 					</tbody>
 				</table>
 			{:else if busy}
-				<EmptyState icon="library" title="Loading Audiobookshelf" />
+				<EmptyState icon="audiobook" title="Loading Audiobookshelf" />
 			{:else if catalog}
-				<EmptyState icon="library" title="No audiobooks on this page" />
+				<EmptyState icon="audiobook" title="No audiobooks on this page" />
 			{/if}
 		</div>
 		{#if catalog && catalog.total > catalog.limit}

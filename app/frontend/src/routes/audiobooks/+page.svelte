@@ -98,7 +98,7 @@
 		{#if session.s.role === 'owner'}
 			<span class="tp-gap"></span>
 			<div class="tp-cap">
-				<Button href={to('/library/audiobooks')} icon="library">Library</Button>
+				<Button href={to('/library/audiobooks')} icon="audiobook">Library</Button>
 				<Button href={to('/settings/sources')} icon="settings">Sources</Button>
 				<Button href="https://torrents.shelfgoblin.dev/imports/reviews/" icon="arrowUpRight">Review</Button>
 			</div>
@@ -151,11 +151,11 @@
 			{:else if searched}
 				<EmptyState icon="search" title="No releases found" text="Try a different title or Source." />
 			{:else}
-				<EmptyState icon="library" title="Find an audiobook" text="Search LibriVox or a torrent indexer you’ve enabled for audiobooks in Sources." />
+				<EmptyState icon="audiobook" title="Find an audiobook" text="Search LibriVox or a torrent indexer you’ve enabled for audiobooks in Sources." />
 			{/if}
 		</div>
 	{:else}
-		<EmptyState icon="library" title="Sign in as the owner to use Audiobooks" />
+		<EmptyState icon="audiobook" title="Sign in as the owner to use Audiobooks" />
 	{/if}
 </LibraryToolPage>
 
