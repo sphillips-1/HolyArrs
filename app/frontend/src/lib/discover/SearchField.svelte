@@ -106,8 +106,7 @@
 		if (audiobooks) {
 			const term = audiobookSearch.term.trim();
 			if (!term || audiobookSearch.busy) return;
-			if (appPath(page.url.pathname) === '/audiobooks') audiobookSearchHooks.submit?.();
-			else void goto(to(`/audiobooks?q=${encodeURIComponent(term)}`));
+			audiobookSearchHooks.submit?.();
 			return;
 		}
 		if (scoped) return;

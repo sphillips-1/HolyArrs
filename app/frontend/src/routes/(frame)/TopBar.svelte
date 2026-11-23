@@ -3,6 +3,9 @@
 	import IconButton from '#lib/ui/IconButton.svelte';
 	import { SearchField, topBar, cameFrom, pageLabel, type CameFrom } from '#lib/discover/index.ts';
 	import { afterNavigate } from '$app/navigation';
+	import { page } from '$app/state';
+	import { appPath } from '#lib/core/paths.ts';
+	import { session } from '#lib/core/session.svelte.ts';
 	import { topCrumbs } from '#lib/core/top-crumbs.svelte.ts';
 
 	// The 56px translucent bar above the content (tablet and desktop): sidebar toggle when collapsed, back and forward on detail pages, and the one search field in the centre.
@@ -78,7 +81,11 @@
 			</nav>
 		{/if}
 	</div>
-	<div class="centre"><SearchField {searchKey} /></div>
+	<div class="centre">
+		{#if appPath(page.url.pathname) !== '/library/audiobooks' || session.s.role !== 'owner'}
+			<SearchField {searchKey} />
+		{/if}
+	</div>
 	<div class="trail"></div>
 </header>
 

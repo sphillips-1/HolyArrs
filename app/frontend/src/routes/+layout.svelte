@@ -236,7 +236,7 @@
 			// Ctrl+K and / focus the one search field (the top bar; on phones the Search page's) and open Search.
 			e.preventDefault();
 			showBar();
-			if (session.s.role === 'owner' && isAudiobookSearch(path)) {
+			if (session.s.role === 'owner' && (isAudiobookSearch(path) || path === '/library/audiobooks')) {
 				focusField(true);
 				return;
 			}

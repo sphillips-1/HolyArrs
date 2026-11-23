@@ -12,7 +12,7 @@ export const dlScope = $state({ on: false, off: false, term: '' });
 
 export const audiobookSearch = $state({ term: '', busy: false });
 export const audiobookSearchHooks: Pick<Hooks, 'submit'> = {};
-export const isAudiobookSearch = (path: string) => path === '/audiobooks' || path === '/library/audiobooks';
+export const isAudiobookSearch = (path: string) => path === '/audiobooks';
 
 // Lets the active page react to submit, blur and exit of the box.
 export const searchHooks: Hooks = {};
