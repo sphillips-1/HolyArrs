@@ -20,8 +20,10 @@
 
 <p align="center"><a href="https://news.ycombinator.com/item?id=50439000"><img src="https://hackergit.org/badge/HolyArrs/HolyArrs.svg?style=rank" alt="#1 on Show HN" width="250" height="55"></a>&nbsp;&nbsp;<a href="https://trendshift.io/repositories/347687?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-347687"><img src="https://trendshift.io/api/badge/trendshift/repositories/347687/daily?language=Go" alt="Trending on Trendshift" width="250" height="55"></a></p>
 
+<p align="center"><a href="https://holyarrs.com/sponsor"><img src="https://holyarrs.com/sponsors/banner.gif" alt="Sponsors"></a></p>
+
 > [!NOTE]
-> **HolyArrs 1.2.0: un punto rojo muestra qué necesita atención, y las pruebas de conexión dicen el problema exacto.** Etiquetas de Plex para los títulos pedidos, nombres en tu idioma y más de 30 arreglos. Conecta apps por MCP con claves que tú controlas. [Novedades](https://holyarrs.com/whats-new/)
+> **HolyArrs 1.3.0: más de 150 arreglos y funciones de 101 personas.** Un sistema de plugins, un nuevo asistente de configuración y un modo sin intervención que nunca toca tus archivos. [Novedades](https://holyarrs.com/whats-new/)
 
 > Cada póster, tráiler y puntuación de tu HolyArrs viene de un servidor que mantengo y pago yo mismo, para que siga siendo gratis para todos. Si HolyArrs hizo tu noche de películas un poco mejor, patrocinarlo mantiene las luces encendidas para todos 💛
 >
@@ -372,7 +374,7 @@ La imagen no tiene shell, así que `docker exec -it holyarrs /bin/bash` no funci
 - Te quedaste fuera de la cuenta de propietario:
 
     ```sh
-    docker exec -i holyarrs /holyarrs reset-owner
+    docker exec -it holyarrs /holyarrs reset-owner
     ```
 
 - Número de versión:

@@ -20,8 +20,10 @@
 
 <p align="center"><a href="https://news.ycombinator.com/item?id=50439000"><img src="https://hackergit.org/badge/HolyArrs/HolyArrs.svg?style=rank" alt="#1 on Show HN" width="250" height="55"></a>&nbsp;&nbsp;<a href="https://trendshift.io/repositories/347687?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-347687"><img src="https://trendshift.io/api/badge/trendshift/repositories/347687/daily?language=Go" alt="Trending on Trendshift" width="250" height="55"></a></p>
 
+<p align="center"><a href="https://holyarrs.com/sponsor"><img src="https://holyarrs.com/sponsors/banner.gif" alt="Sponsors"></a></p>
+
 > [!NOTE]
-> **HolyArrs 1.2.0: crvena točka pokazuje što traži pažnju, a test veze imenuje točan problem.** Oznake u Plexu za tražene naslove, imena na vašem jeziku i više od 30 ispravaka. Povežite aplikacije preko MCP-a ključevima koje vi kontrolirate. [Pogledaj što je novo](https://holyarrs.com/whats-new/)
+> **HolyArrs 1.3.0: više od 150 ispravaka i značajki od 101 ljudi.** Sustav dodataka, novi čarobnjak za postavljanje i način bez diranja koji nikad ne dira tvoje datoteke. [Pogledaj što je novo](https://holyarrs.com/whats-new/)
 
 > Svaki poster, trailer i ocjena u tvom HolyArrsu dolazi sa servera koji sâm vodim i plaćam, da ostane besplatan za sve. Ako ti je HolyArrs malo uljepšao filmsku večer, sponzorstvo drži svjetla upaljenima za sve nas 💛
 >
@@ -372,7 +374,7 @@ Image nema shell, pa `docker exec -it holyarrs /bin/bash` neće raditi. HolyArrs
 - Zaključan si izvan računa vlasnika:
 
     ```sh
-    docker exec -i holyarrs /holyarrs reset-owner
+    docker exec -it holyarrs /holyarrs reset-owner
     ```
 
 - Broj verzije:

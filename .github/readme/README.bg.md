@@ -20,8 +20,10 @@
 
 <p align="center"><a href="https://news.ycombinator.com/item?id=50439000"><img src="https://hackergit.org/badge/HolyArrs/HolyArrs.svg?style=rank" alt="#1 on Show HN" width="250" height="55"></a>&nbsp;&nbsp;<a href="https://trendshift.io/repositories/347687?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-347687"><img src="https://trendshift.io/api/badge/trendshift/repositories/347687/daily?language=Go" alt="Trending on Trendshift" width="250" height="55"></a></p>
 
+<p align="center"><a href="https://holyarrs.com/sponsor"><img src="https://holyarrs.com/sponsors/banner.gif" alt="Sponsors"></a></p>
+
 > [!NOTE]
-> **HolyArrs 1.2.0: червена точка показва какво иска внимание, а тестът на връзката назовава точния проблем.** Етикети в Plex за заявените заглавия, имена на вашия език и над 30 поправки. Свържете приложения през MCP с ключове, които контролирате. [Виж какво е новото](https://holyarrs.com/whats-new/)
+> **HolyArrs 1.3.0: над 150 поправки и функции от 101 души.** Система за добавки, нов съветник за настройка и режим „без намеса“, който никога не пипа файловете ви. [Виж какво е новото](https://holyarrs.com/whats-new/)
 
 > Всеки постер, трейлър и оценка в твоя HolyArrs идват от сървър, който аз поддържам и плащам сам, за да остане безплатен за всички. Ако HolyArrs е направил филмовата ти вечер малко по-хубава, спонсор държи лампите светнати за всички нас 💛
 >
@@ -372,7 +374,7 @@ docker compose up -d
 - Не можеш да влезеш в акаунта на собственика:
 
     ```sh
-    docker exec -i holyarrs /holyarrs reset-owner
+    docker exec -it holyarrs /holyarrs reset-owner
     ```
 
 - Номер на версията:
