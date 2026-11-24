@@ -93,6 +93,9 @@
 	const beginSearch = createLatestOnly();
 	const who = $derived(audienceOf(session.can));
 	const manage = $derived(session.can('manage_library'));
+	const audiobookHref = $derived(to(searchField.term.trim()
+		? `/audiobooks?${new URLSearchParams({ q: searchField.term.trim() })}`
+		: '/audiobooks'));
 
 	const scopeOptions = $derived(
 		([
@@ -478,9 +481,14 @@
 	<div class="phone-field"><SearchField searchKey="" testid="search-box-phone" id="q-phone" closable={false} /></div>
 	<MetadataNotice />
 
-	{#if scopeOptions.length > 2}
+	{#if scopeOptions.length > 2 || session.s.role === 'owner'}
 		<div class="types" data-pin-pills>
-			<SegmentedControl options={scopeOptions} value={scope} label={t('discover.search.lookIn')} testid="search-scope" onchange={setScope} />
+			{#if scopeOptions.length > 2}
+				<SegmentedControl options={scopeOptions} value={scope} label={t('discover.search.lookIn')} testid="search-scope" onchange={setScope} />
+			{/if}
+			{#if session.s.role === 'owner'}
+				<Button href={audiobookHref} icon="audiobook" class="audiobook-search">Audiobooks</Button>
+			{/if}
 		</div>
 	{/if}
 
@@ -748,7 +756,8 @@
 	.phone-field { display: none; }
 	@media (max-width: 767px) { .phone-field { position: sticky; top: 8px; z-index: 22; display: flex; justify-content: center; } .phone-field :global(.ui-search) { width: 100%; } }
 	/* The same floating glass pill as Explore's type switch. */
-	.types { display: flex; justify-content: center; pointer-events: none; }
+	.types { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; pointer-events: none; }
+	.types :global(.audiobook-search) { pointer-events: auto; }
 	.types :global(.ui-seg) { pointer-events: auto; background: color-mix(in srgb, var(--surface-2) 70%, transparent); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); box-shadow: 0 10px 30px rgb(0 0 0 / 0.28), 0 0 0 0.5px color-mix(in srgb, var(--text) 14%, transparent); }
 	@media (max-width: 767px) { .types :global(.ui-seg) { display: grid; width: 100%; } .types :global(.ui-seg button) { padding: 0 6px; } }
 	/* Narrow phones: the words stay (they say more than the icons), the icons go, so five kinds fit in one row; a long word wraps, never cut. */

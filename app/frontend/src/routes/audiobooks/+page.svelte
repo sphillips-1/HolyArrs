@@ -24,6 +24,7 @@
 
 	let source = $state('librivox');
 	let sourceOptions = $state<SourceView[]>([]);
+	let loadingSources = $state(true);
 	let releases = $state<Release[]>([]);
 	let searched = $state<{ title: string; source: string } | null>(null);
 	let searching = $state(false);
@@ -31,7 +32,7 @@
 	let notice = $state('');
 	let error = $state('');
 	let sourceError = $state('');
-	const busy = $derived(searching || grabbing !== '');
+	const busy = $derived(loadingSources || searching || grabbing !== '');
 	const sourceLabel = $derived(source === 'librivox' ? 'LibriVox' : sourceOptions.find((item) => String(item.id) === source)?.name ?? 'Source');
 	$effect(() => { audiobookSearch.busy = busy; });
 
@@ -41,15 +42,23 @@
 		const query = page.url.searchParams.get('q');
 		if (query) {
 			audiobookSearch.term = query.slice(0, 200);
-			void search();
 		}
+		let mounted = true;
 		void api.get<{ sources: SourceView[] }>('/sources').then((result) => {
+			if (!mounted) return;
 			sourceOptions = result.sources.filter((item) => item.state === 'enabled' && item.protocol === 'torrent'
 				&& item.format === 'torznab' && item.use_for.hand_search && item.kinds?.includes('audiobook'));
+			const audiobookBay = sourceOptions.find((item) => /audiobook[\s_-]*bay/i.test(item.name));
+			if (audiobookBay) source = String(audiobookBay.id);
 		}).catch(() => {
-			sourceError = 'Configured Sources could not be loaded.';
+			if (mounted) sourceError = 'Configured Sources could not be loaded.';
+		}).finally(() => {
+			if (!mounted) return;
+			loadingSources = false;
+			if (query) void search();
 		});
 		return () => {
+			mounted = false;
 			audiobookSearchHooks.submit = undefined;
 			audiobookSearch.busy = false;
 		};
